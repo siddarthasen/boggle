@@ -1,0 +1,106 @@
+import Board
+
+class Player():
+
+	def __init__(self, name, words, score,):
+
+		#player class 
+
+		self.name = name 
+		self.words = words
+		self.score = score
+
+	def playgame(self):
+		
+		# allows player to input words
+		# removes non-words
+		# changes player/ends game if 'quit' is typed
+
+		while True:
+			text = open("all_words.txt", "r").read()
+			list_words = text.split()
+			playerInput = input("word: ")
+			if (playerInput == "quit"):
+				break
+			if playerInput in list_words:
+				self.words.append(playerInput)
+
+	def exists(self,x,y):
+		
+		# returns True if coordinates exist in board
+		return x >= 0 and x < len(board) and y >= 0 and y < len(board[-1])
+
+	def adjacency(self, coordinates):
+		
+		# returns list of coordinates around the letter chosen
+		lst = []
+		for x in [0, -1, 1]:
+			for y in [0, -1, 1]:
+				if self.exists(coordinates[0]+x, coordinates[1]+y):
+					lst.append([coordinates[0]+x, coordinates[1]+y])
+		return lst[1:]
+
+	def check(self, word, lst, index):
+	  	
+	  	# returns True if the word exists 
+	  	if len(lst) == 0: return False	  	
+	  	adjacency_lst = self.adjacency(lst[index])	  	
+	  	for i in range(len(adjacency_lst)):	  		
+	  		coordinates = adjacency_lst[i]
+	  		if board[coordinates[0]][coordinates[1]] == word[0]:
+	  			if len(word) == 1:
+	  				return True	  			
+	  			else:
+	  				return self.check(word[1:], adjacency_lst, i)
+		  	if i == len(adjacency_lst)-1:
+		  		if index < len(lst)-1:
+		  			return self.check(word,lst,index+1)
+	  	return False
+
+	def add_scores(self, board):
+
+		# adds scores based on the list of words of the respective player
+		for word in self.words:
+  			wrd = list(word.upper())
+  			first = [ [i,j] for i in range(len(board)) for j in range(len(board[i])) if board[i][j] == wrd[0] ]
+  			if self.check(wrd[1:],first,0):
+  				print(word)
+  				self.score += 1
+  			
+
+#initializes board from Board.py
+board = Board.board
+
+
+#set's up player names
+player1 = Player(input("player1 name: "), [], 0)
+player2 = Player(input("player2 name: "), [], 0)
+print("type words in only small caps. when you give up, type in 'quit' ")
+
+#player 1 turn
+print(player1.name + "'s turn")
+Board.display(board)
+player1.playgame()
+player1.words = list(set(player1.words))
+
+#player 2 turn
+print(player2.name + "'s turn")
+Board.display(board)
+player2.playgame()
+player2.words = list(set(player2.words))
+
+#checks player 1 and player 2 word lists for scores
+player1.add_scores(board)
+player2.add_scores(board)
+
+
+#winning text
+if player1.score > player2.score:
+	print(player1.name + " wins with " + str(player1.score))
+elif player1.score <  player2.score:
+	print(player2.name + " wins with " + str(player2.score))
+else:
+	print("it's a tie. Both players have: " + str(player1.score))
+
+
+print("type in something to exist: " + str(input()))
