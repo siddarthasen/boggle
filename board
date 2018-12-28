@@ -1,0 +1,31 @@
+import random
+
+
+
+def make_board(filename, length):
+
+	# makes a random board
+	text = open(filename, "r").read()
+	list_letters = text.split()
+	board = [[random.choice(list_letters) for x in range(length)] for y in range(length)] 
+	return board
+
+def read_file(filename):
+
+	# used to test if text in file is correct
+    f = open(filename, "r")
+    text = f.read()
+    return text
+
+def display(board):
+
+	# prints the board
+	for item in board:
+		print(item)
+
+
+
+# initialize board
+board = make_board("alphabets.txt", int(input("How big of a board?: ")))
+
+
